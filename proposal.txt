@@ -1,0 +1,45 @@
+Title: Modern web application security
+
+Speaker: Julien Vehent
+
+Julien leads the Firefox Operations Security team at Mozilla, tasked with 
+defining, implementing and operating the security of Firefox's backend services 
+and release engineering infrastructure. Julien's background is in web 
+applications security, services architecture, cryptography and risk management. 
+Julien is the author of "Securing DevOps", published at Manning Editions. More 
+at https://jve.linuxwall.info/jve.html
+
+Abstract
+--------
+
+It is 2018 and your websites are still getting targeted on a daily basis. Your 
+WAF rules are so complex no one wants to touch them, and every time you're done 
+reviewing the next javascript framework, a new one has popped up on Hackers 
+News, and shipped in production. Your bug bounty program alerts you of a new XSS 
+every other week, and there's no end in sight. Meanwhile, your boss keeps asking 
+if you're on the latest version of Apache Struts, terrified to become the next 
+Equifax. Suffice to say, web application security is hard, and often feels like 
+a losing battle.
+
+But you're not alone in fighting that battle. An entire community of security 
+engineers is continuously modernizing web browsers, certificate tooling, 
+dependency tracking and security testing tools that you can leverage to make 
+your life easier, and your web applications safer.
+
+In this talk, we will cover seven modern web application security techniques 
+that you can use today to better protect your websites. They are:
+
+    1. XSS & Content Security Policy
+    2. Isolating origins when accepting user generated content
+    3. Leveraging cookie security
+    4. Authenticating users securely
+    5. Controling the supply chain
+    6. Applying strong HTTPS
+    7. Testing security in Continuous Integration
+
+We will discuss how each area can be integrated into your environments, and 
+share the knowledge acquired at Mozilla while doing this work on Firefox's 
+backend services.
+
+This is a tactical presentation, and the audience will be given hands-on tools 
+and techniques they can apply in their own environments straight away.
