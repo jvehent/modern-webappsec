@@ -34,11 +34,11 @@
                     <h1>Modern Web Application Security</h1>
                     <h2>A hands-on guide to staying out of<br />(the wrong kind of) news</h2>
                     <br /><br />
-                    <p>Find these slides at<br /><strong>jvehent.github.io/modern-webappsec/</strong></p>
+                    <p>Slides at<br /><strong>jvehent.github.io/modern-webappsec/</strong></p>
                     <!-- <p style="font-size:0.5em;">tip: navigate with left/right arrows</p> -->
                 </section>
 
-                <section>
+                <section data-background-image="statics/firefox-gray.png">
                     <h2>$whoami</h2>
                     <table>
                         <tr>
@@ -47,10 +47,9 @@
                             </td>
                             <td style="vertical-align:middle">
                                 <ul>
-                                    <li>Manage the team that runs Operations Security for Firefox</li>
-                                    <li>Protector of Firefox's infrastructure</li>
-                                    <li>Security tools coder</li>
-                                    <li>@jvehent on twitter</li>
+                                    <li>Run Operations Security for Firefox</li>
+                                    <li>DevSecOps tools coder</li>
+                                    <li><strong>@jvehent</strong> on twitter</li>
                                 </ul>
                             </td>
                         </tr>
@@ -72,23 +71,33 @@
                 </section>
 
                 <section>
-                    <h2>And it's not the only one...</h2>
+                    <h2>And it's not the only one.</h2>
                     <img src="statics/united.png" />
                 </section>
 
                 <section>
-                    <h2>Some try a bit harder</h2>
+                    <h2>Some try a bit harder...</h2>
                     <img src="statics/nytimes.png" />
                 </section>
 
                 <section>
-                    <h2>It's not impossible to achieve</h2>
-                    <img src="statics/fxa.png" />
+                    <h2>... but overall, we suck at webappsec</h2>
+                    <a href="https://pokeinthe.io/2018/02/08/state-of-security-alexa-top-one-million-2018-02/"><img src="statics/observatory_stats.png" /></a>
                 </section>
 
                 <section>
-                    <h2>These things are complex</h2>
+                    <h2>Bug bounty researchers continuously show that poor webappsec is a risk</h2>
+                    <img src="statics/bugcrowd.png" />
+                </section>
+
+                <section>
+                    <h2>Modern web applications are ridiculously complex</h2>
                     <img src="statics/react_joke.png" width="70%"/>
+                </section>
+
+                <section>
+                    <h2>And securing them is possible</h2>
+                    <img src="statics/fxa.png" />
                 </section>
 
                 <section>
@@ -225,7 +234,13 @@ func setResponseHeaders() Middleware {
 
                 <section>
                     <h2>Dependencies</h2>
-                    <p>If you're going to pull half the internet into your code,<br />at least make sure it's up to date.</p>
+                    <p>Breaking news: you're probably pulling half the internet in your webapp at every build.</p>
+                    <img src="statics/vladnpm.png" />
+                </section>
+
+                <section>
+                    <h2>Dependencies</h2>
+                    <p>At least make sure it's up to date.</p>
                     <img src="statics/requirements.io.png" />
                 </section>
 
@@ -318,7 +333,7 @@ On Python 2, use raw_input instead, input is safe in Python 3.
                 </section>
 
                 <section>
-                    <h2>Drive your security testing from continuous integration</h2>
+                    <h2>Test your webappsec baseline from continuous integration</h2>
                     <img src="statics/zap_ci.png" style="border:0;"/>
                     <p>Don't deploy to prod unless the security tests pass in dev.</p>
                 </section>
@@ -364,7 +379,6 @@ WARN: Web Browser XSS Protection Not Enabled [10016] x 3
                     <p>As soon as you have the budget, hire specialists to audit your website. Ideally, make that report public too.</p>
                     <img src="statics/fxa_audit.png" />
                 </section>
-
 
                 <section>
                     <h2>How about securing your servers?</h2>
