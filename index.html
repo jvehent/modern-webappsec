@@ -1,155 +1,263 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Modern Web Application Security, by Julien Vehent</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<meta name="author" content="Julien Vehent">
+    <title>Modern Web Application Security, by Julien Vehent</title>
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/beige.css">
+    <meta name="author" content="Julien Vehent">
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-        <div id="logo">
-            <img src="statics/mozilla.png" width="15%" class="logo"/>
-        </div>
-		<div class="reveal">
-			<div class="slides">
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
 
-				<section>
-                    <h1>Modern Web Application Security</h1>
-                    <h2>A hands-on guide to staying out of<br />(the wrong kind of) news</h2>
-                    <br /><br />
-                    <p>Slides at<br /><strong>jvehent.github.io/modern-webappsec/</strong></p>
-                    <!-- <p style="font-size:0.5em;">tip: navigate with left/right arrows</p> -->
-                </section>
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
 
-                <section data-background-image="statics/firefox-gray.png">
-                    <h2>$whoami</h2>
-                    <table>
-                        <tr>
-                            <td>
-                                <img src="statics/id2015.JPG" width="500" />
-                            </td>
-                            <td style="vertical-align:middle">
-                                <ul>
-                                    <li>Run Operations Security for Firefox</li>
-                                    <li>DevSecOps tools coder</li>
-                                    <li><strong>@jvehent</strong> on twitter</li>
-                                </ul>
-                            </td>
-                        </tr>
-                    </table>
-                </section>
+<body>
+    <div style="float: left; position: absolute;">
+        <img src="statics/mozilla.png" width="15%" />
+    </div>
+    <div class="reveal">
+        <div class="slides">
 
-                <section>
-                    <img src="statics/Vehent-SDO-MEAP-HI.png" />
-                </section>
+            <section>
+                <h1>Modern Web Application Security</h1>
+                <h2>A hands-on guide to staying out of<br />(the wrong kind of) news</h2>
+                <br /><br />
+                <p>Slides at<br /><strong>jvehent.github.io/modern-webappsec/</strong></p>
+            </section>
 
-                <section>
-                    <h2>Let's take a random target...</h2>
-                    <img src="statics/4chan.png" />
-                </section>
+            <section data-background-image="statics/firefox-gray.png" data-background-size="60%">
+                <h2>$whoami</h2>
+                <ul>
+                    <li>Firefox Operations Security</li>
+                    <li>Security tools coder</li>
+                    <li>Author of Securing DevOps</li>
+                    <li><strong>@jvehent</strong> on twitter</li>
+                </ul>
+            </section>
 
-                <section>
-                    <h2>Like most website, it has a few issues</h2>
-                    <img src="statics/observatory.png" />
-                </section>
+            <section>
+                <h2>Story time</h2>
+                <img src="statics/offerman.gif" />
+                <aside class="notes">
+                    Once upon a time, Mozilla decided to create a website to host firefox addons. It was a mighty
+                    website with a lot of fancy features that used the latest Django technology of the time. I grew up
+                    in size quickly and became very very large, hosted thousands and thousands of addons, and used by a
+                    lot of people.
 
-                <section>
-                    <h2>And it's not the only one.</h2>
-                    <img src="statics/united.png" />
-                </section>
+                    It was so large, in fact, that it was almost impossible to defend, and so its security and
+                    developers spent their time battling cross site scripting vulnerabilities, all types of injections,
+                    bypasses of access controls, etc etc.
 
-                <section>
-                    <h2>Some try a bit harder...</h2>
-                    <img src="statics/nytimes.png" />
-                </section>
+                    So the security team said "let's invite researchers to send us bugs and we'll give them money", and
+                    they create a web bug bounty program. Researchers loved it, and they submitted their bugs every
+                    weekend, finding cross site script after cross site scripting, injection after injection. The
+                    security team spent thousands of dollars paying researchers, and the developers spent even more
+                    thousands of dollars fixing the bugs.
 
-                <section>
-                    <h2>... but overall, we suck at webappsec</h2>
-                    <a href="https://pokeinthe.io/2018/02/08/state-of-security-alexa-top-one-million-2018-02/"><img src="statics/observatory_stats.png" /></a>
-                </section>
+                    It wasn't that the site was bad. If was, by any engineering standard, good code. But the site was
+                    getting old and large, and fixing problems at the root was becoming more and more difficult. So
+                    they used band aids to address the immediate issues.
 
-                <section>
-                    <h2>Bug bounty researchers continuously show that poor webappsec is a risk</h2>
-                    <img src="statics/bugcrowd.png" />
-                </section>
+                    But researchers kept finding bugs, security kept paying bounty, and developers kept playing whack a
+                    mole. It was working. The site wasn't getting more secure.
+                    At some point, one security decided to put her foot down and implement content security policy on
+                    the site. She spent weeks working with the developers on reorganizing the site to reign in all the
+                    scripts and styles scattered across hundreds of files accumulated over the years.
 
-                <section>
-                    <h2>Modern web applications are ridiculously complex</h2>
-                    <img src="statics/react_joke.png" width="70%"/>
-                </section>
+                    I was hard work, but eventually they succeeded, and after years of weekly alerts, the CSP finally
+                    stopped the flow of vulnerabilities... almost!
+                    A few months after the CSP was installed, a researcher with a strong accent came along and dropped
+                    some XML in a bug. The XML, when interpreted by internal components of the website, triggered a
+                    library to read a file and upload its content to another site. An Xml External Entity
+                    vulnerability. It was bad, and the CSP couldn't do anything about to block it, so the developers
+                    wrote a patch and auditing other parts of the site for similar issues.
 
-                <section>
-                    <h2>But securing them is possible!</h2>
-                    <p>with some amount of effort</p>
-                    <img src="statics/fxa.png" />
-                </section>
+                    The war wasn't over, but it had become significantly easier, because they knew that some specific
+                    controls in the right places could help win them battles.
+                </aside>
+            </section>
 
-                <section>
-                    <h2>Web Application Security</h2>
-                    <h3>in six steps</h3>
-                    <ol>
-                        <li>Content Injection</li>
-                        <li>Accepting User Generated Content</li>
-                        <li>Cookie Security</li>
-                        <li>Authenticating users</li>
-                        <li>HTTPS</li>
-                        <li>Testing Security</li>
-                    </ol>
-                </section>
-               
-                <section>
-                    <h2>Content Injection</h2>
-                    <p>Hacker's favorite way to blowing up your webapps since....<br />pretty much forever.</p>
-                    <img src="statics/samy.jpg" />
-                </section>
+            <section>
+                <h2>Poor webappsec is a costly risk</h2>
+                <a href="https://ww2.bugcrowd.com/rs/453-IJC-858/images/2018-state-of-bug-bounty.pdf"><img src="statics/bugcrowd.png" /></a>
+            </section>
 
-                <section>
-                    <h2>Cross-Site Scripting</h2>
-                    <p><em>Cross-site scripting (XSS) is a security exploit which allows an attacker to inject into a website malicious client-side code. This code is executed by the victims and lets the attackers bypass access controls and impersonate users.</em></p>
-                </section>
+            <section>
+                <h2>And the #1 source of data breaches</h2>
+                <a href="https://enterprise.verizon.com/resources/reports/dbir/"><img src="statics/dbir.png" /></a>
+            </section>
 
-                <section>
-                    <h2>Cross-Site Scripting</h2>
-                    <pre><code data-trim data-noescape>
+            <section>
+                <h2>The Good</h2>
+                <ul>
+                    <li>HTTPS usage is going up! (>70% of page loads)</li>
+                    <li>Frameworks are adopting safe defaults</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>The Bad</h2>
+                <ul>
+                    <li>Modern controls (Cookies, CSP, HSTS, SRI) are not adopted</li>
+                    <li>Secure cookies at 9%, HSTS at 6%, CSP and SRI at ~0.1% 😞</li>
+                </ul>
+                <img src="statics/feb2018scan.png" />
+            </section>
+
+            <section>
+                <h2>The Ugly</h2>
+                <table>
+                    <tr>
+                        <td width="60%" style="vertical-align:middle"><img src="statics/tire-fire.webp" /></td>
+                        <td width="40%" style="vertical-align:middle">
+                            <p>Dependency management (supply chain) is a complete garbage fire</p>
+                        </td>
+                    </tr>
+                </table>
+
+            </section>
+
+            <section>
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle">
+                            <h2>Modern WebAppSec</h2>
+                            <h3>in seven steps</h3>
+                        </td>
+                        <td style="vertical-align:middle">
+                            <ol>
+                                <li>Use HTTPS</li>
+                                <li>Block injection</li>
+                                <li>Sandbox user content</li>
+                                <li>Authenticate with OIDC</li>
+                                <li>Check your dependencies</li>
+                                <li>Control access to code</li>
+                                <li>Test All The Things</li>
+                            </ol>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>#1. Use HTTPS</h2>
+                <p>A pre-requisite to any website built today</p>
+                <img src="statics/insecure_password.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#1. Use HTTPS</h4>
+                <h2>Latest browser features require secure contexts</h2>
+                <img src="statics/Features_restricted_to_secure_contexts.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#1. Use HTTPS</h4>
+
+                <h2>Use Let's Encrypt!</h2>
+                <img src="statics/le-logo-twitter.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#1. Use HTTPS</h4>
+
+                <h2>Test your HTTPS</h2>
+                <p>Many web servers and providers now have safe defaults, but always verify</p>
+                <img src="statics/tlsobs.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#1. Use HTTPS</h4>
+
+                <h2>Use hardened server configs</h2>
+                <img src="statics/tls-config-gen.png" />
+            </section>
+
+            <section>
+                <h2>Block Injections</h2>
+                <p>Hacker's favorite way to blowing up your webapps since....<br />pretty much forever.</p>
+            </section>
+
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <a href="https://www.hackerone.com/sites/default/files/2019-03/the-2019-hacker-report.pdf"><img src="statics/hacker-report-technique.png" style="margin-top:50px;" /></a>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <h2>Cross-Site Scripting</h2>
+                <p><em>Cross-site scripting (XSS) is a security exploit which allows an attacker to inject into a
+                        website malicious client-side code. This code is executed by the victims and lets the attackers
+                        bypass access controls and impersonate users.</em></p>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <h2>Remember Samy?</h2>
+                <img src="statics/samy.jpg" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <pre><code data-trim >BACKGROUND: url('java
+script:eval(document.all.mycode.expr)')"
+expr="var B=String.fromCharCode(34);var A=String.fromCharCode(39);function g(){
+var C;try{var D=document.body.createTextRange();C=D.htmlText}catch(e){}if(C){
+return C}else{return eval('document.body.inne'+'rHTML')}}function 
+getData(AU){M=getFromURL(AU,'friendID');L=getFromURL(AU,'Mytoken')}function 
+getQueryParams(){var E=document.location.search;var F=E.substring(1,E.length).split('&');
+var AS=new Array();for(var O=0;OF.length;O++){var I=F[O].split('=');AS[I[0]]=I[1]}return AS}
+var J;var AS=getQueryParams();var L=AS['Mytoken'];var M=AS['friendID'];
+if(location.hostname=='profile.myspace.com'){document.location='http://www.myspace.com'+
+location.pathname+location.search}else{if(!M){getData(g())}main()}function getClientFID(){
+                </code></pre>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <h2>Cross-Site Scripting</h2>
+                <pre><code data-trim data-noescape>
 &lt;script type='text/javascript'&gt;alert('xss');&lt;/script&gt;
                     </code></pre>
-                    <img src="statics/xss.png" />
-                </section>
+                <img src="statics/xss.png" />
+            </section>
 
-                <section>
-                    <h2>Cross-Site Scripting</h2>
-                    <img src="statics/xss_at_mozilla.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
 
-                <section>
-                    <h2>Content Security Policy</h2>
-                    <h3>the XSS remedy</h3>
-                    <pre><code data-trim data-noescape>
+                <h2>Content Security Policy</h2>
+                <h3>the XSS remedy</h3>
+                <pre><code data-trim data-noescape>
 Content-Security-Policy: default-src *; object-src 'none'
                     </code></pre>
-                    <p>Disable the use of unsafe inline/eval,<br />allow everything else except plugin execution.</p>
-                </section>
+                <p>Disable the use of unsafe inline/eval,<br />allow everything else except plugin execution.</p>
+            </section>
 
-                <section>
-                    <h2>CSP in your application</h2>
-                    <pre><code data-trim data-noescape>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+
+                <h2>CSP in your application</h2>
+                <pre><code data-trim data-noescape>
 func setResponseHeaders() Middleware {
   return func(h http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -165,158 +273,211 @@ func setResponseHeaders() Middleware {
   }
 }
                     </code></pre>
-                    <p>You need to return the CSP header on <strong>every</strong> HTTP response.</p>
-                </section>
+                <p>You need to return the CSP header on <strong>every</strong> HTTP response.</p>
+            </section>
 
-                <section>
-                    <h2>Accepting user generated content</h2>
-                    <img src="statics/yelpcritic.gif" />
-                </section>
+            <section>
+                <h2>Sandbox user content</h2>
+                <img src="statics/yelpcritic.gif" />
+            </section>
 
-                <section>
-                    <h2>Accepting user generated content</h2>
-                    <p>This is easy: <strong>DON'T REFLECT IT ON YOUR MAIN ORIGIN!</strong></p>
-                    <p>Put user generated data on a separate domain that doesn't have cookies, and insert it on your main site with an iFrame.</p>
-                    <p>This prevents UGC from having access to the origin.</p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#3. Sandbox user content</h4>
+                <h2>Sandbox user content</h2>
+                <p>This is easy: <strong>DON'T REFLECT IT ON YOUR MAIN ORIGIN!</strong></p>
+                <p>Put user generated data on a separate domain that doesn't have cookies, and insert it on your main
+                    site with an iFrame.</p>
+                <p>This prevents UGC from having access to the origin.</p>
+            </section>
 
-                <section>
-                    <h2>Accepting user generated content</h2>
-                    <img src="statics/iframe-ugc.svg" />
-                    <p>This is (partly) why Facebook puts user images on "fbcdn.net"</p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#3. Sandbox user content</h4>
+                <img src="statics/iframe-ugc.svg" />
+                <p>This is (partly) why Facebook puts user images on "fbcdn.net"</p>
+            </section>
 
-                <section>
-                    <h2>Cookie Security</h2>
-                    <p>Cookies are well protected in the browser, if you use them the right way. The rule of thumb:
-                    <ol>
-                        <li>Don't let Javascript read them, set the HTTPOnly flag</li>
-                        <li>Don't send them in clear, set the Secure flag</li>
-                        <li>Use sensible expiration via Expires or Max-Age</li>
-                        <li>Don't send them around, set SameSite=Strict</li>
-                    </ol></p>
-                </section>
+            <section>
+                <h2>Authenticate with OIDC</h2>
+                <p>Don't store user passwords, don't end up on this list.</p>
+                <img src="statics/haveibeenpwned.png" />
+            </section>
 
-                <section>
-                    <h2>Cookie Security</h2>
-                    <h3>Wait... what was that last one?</h3>
-                    <p>SameSite is a new cookie attribute that tells the browser to only send the cookie back to the origin is was set from.</p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#4. Authenticate with OIDC</h4>
 
-                <section>
-                    <h2>Cookie Security</h2>
-                    <p>SameSite prevents third-party sites from forcing you to send requests with your cookies. It's like a CSRF token, only nicer.</p>
-                    <img src="statics/csrf.png" />
-                </section>
+                <h2>Let someone else do identity management for you.</h2>
+                <img src="statics/oidc_providers.png" />
+            </section>
 
-                <section>
-                    <h2>Authenticating Users</h2>
-                    <p>Don't store user passwords, don't end up on this list.</p>
-                    <img src="statics/haveibeenpwned.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#4. Authenticate with OIDC</h4>
 
-                <section>
-                    <h2>Authenticating Users</h2>
-                    <p>Let someone else do identity management for you.</p>
-                    <img src="statics/oidc_providers.png" />
-                </section>
+                <h2>Benefits of delegating identity management</h2>
+                <ul>
+                    <li>No more passwords in your database</li>
+                    <li>Most providers support two-factor authentication already</li>
+                    <li>Most providers will do fraud detection</li>
+                    <li>Users don't have to remember 3,719 passwords</li>
+                </ul>
+                </p>
+            </section>
 
-                <section>
-                    <h2>Authenticating Users</h2>
-                    <p>Benefits of delegating identity management:
-                    <ul>
-                        <li>No more passwords in your database</li>
-                        <li>Most providers support two-factor authentication already</li>
-                        <li>Most providers will do fraud detection</li>
-                        <li>Users don't have to remember 3,719 passwords</li>
-                    </ul>
-                    </p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#4. Authenticate with OIDC</h4>
+                <h2>Belt, suspenders and parachutes<br />for Admin panels</h2>
+                <p>Even with SSO/OIDC, put your admin panels behind a VPN. It will save you the day a bug bypasses your
+                    auth layer.</p>
+            </section>
 
-                <section>
-                    <h2>Dependencies</h2>
-                    <p>Breaking news: you're probably pulling half the internet in your webapp at every build.</p>
-                    <img src="statics/vladnpm.png" />
-                </section>
+            <section>
+                <h2>Check your dependencies</h2>
+                <p>Breaking news: you're probably pulling half the internet in your webapp at every build.</p>
+            </section>
 
-                <section>
-                    <h2>Dependencies</h2>
-                    <p>At least make sure it's up to date.</p>
-                    <img src="statics/requirements.io.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#5. Check your dependencies</h4>
 
-                <section>
-                    <h2>Dependencies testing tools</h2>
-                    <ol>
-                        <li>Nodejs: greenkeeper.io</li>
-                        <li>Python: pyup.io</li>
-                        <li>Snyk.io covers npm, pip, maven and rubygem</li>
-                    </ol>
-                </section>
-                
-                <section>
-                    <h2>HTTPS</h2>
-                    <p>A pre-requisite to any website nowadays.</p>
-                    <img src="statics/insecure_password.png" />
-                </section>
+                <h2>CVE-2017-5638</h2>
+                <p><em>The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1
+                        has incorrect exception handling and error-message generation during file-upload attempts,
+                        which allows remote attackers to execute arbitrary commands via a crafted Content-Type,
+                        Content-Disposition, or Content-Length HTTP header, as exploited in the wild in March 2017 with
+                        a Content-Type header containing a #cmd= string.</em></p>
+            </section>
 
-                <section>
-                    <h2>Use Let's Encrypt!</h2>
-                    <img src="statics/le-logo-twitter.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#5. Check your dependencies</h4>
 
-                <section>
-                    <h2>Automated certificate issuance</h2>
-                    <img src="statics/howitworks_challenge.png" />
-                    <img src="statics/howitworks_authorization.png"/>
-                </section>
+                <img src="statics/vladnpm.png" style="margin-top:50px;"/>
+            </section>
 
-                <section>
-                    <h2>Test your HTTPS</h2>
-                    <p>Many web servers and providers now have good defaults configurations. Trust, but verify!"
-                    <img src="statics/tlsobs.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#5. Check your dependencies</h4>
 
-                <section>
-                    <h2>Use hardened server configs</h2>
-                    <p>Don't make up your own, it's too time consuming</p>
-                    <img src="statics/tls-config-gen.png" />
-                </section>
+                <h2>Tons of recent horror stories</h2>
+                <ul>
+                    <li>Apache Struts direct link to Equifax compromise</li>
+                    <li>eslint npm account compromise</li>
+                    <li>flatmap-stream wallet attack</li>
+                </ul>
+            </section>
 
-                <section>
-                    <h2>Testing Security</h2>
-                    <p>Four main types of security tests:
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#5. Check your dependencies</h4>
+
+                <img src="statics/zerodeps.svg" style="margin-top:50px;"/>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#5. Check your dependencies</h4>
+                <h2>Tooling is maturing</h2>
+                <ul>
+                    <li><strong>Dependabot</strong> does Ruby, Javascript, Python, PHP, Elixir, Rust, Java, .NET, Go,
+                        Elm, Docker and
+                        Terraform</li>
+                    <li><strong>Snyk.io</strong> covers npm, pip, maven and rubygem</li>
+                    <li><strong>Java</strong>: OWASP Dependency Check (gradle/maven/jenkins plugins)</li>
+                    <li><strong>Nodejs</strong>: greenkeeper.io</li>
+                    <li><strong>Python</strong>: pyup.io</li>
+                </ul>
+            </section>
+
+
+            <section>
+                <h2>Control access to code</h2>
+                <p>What happens when an attacker gains access to merging patches to your application?</p>
+                <img src="statics/GentooLinuxTwitter.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#6. Control access to code</h4>
+                <h2>At the organization level</h2>
+                <ol>
+                    <li>2FA must be required for all members and collaborators.</li>
+                </ol>
+                <h2>At the repository level</h2>
+                <ol>
+                    <li>Disable force pushes</li>
+                    <li>Only give commit privileges to a small set of users</li>
+                    <li>Enforce those restrictions on admins & owners as well</li>
+                    <li>Require all commits to be GPG signed, using keys known in advance</li>
+                </ol>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#6. Control access to code</h4>
+
+                <a href="https://github.com/mozilla-services/GitHub-Audit">
+                    <h3>github.com/mozilla-services/GitHub-Audit</h3>
+                </a>
+                <pre><code data-trim data-noescape>$ ./get_branch_protections.py --repo autograph mozilla-services
+INFO: Finished gathering branch protection data (calls remaining 3379).
+
+$ ./report_branch_status.py --header mozilla-services.db.json |column -t -s ','
+</code></pre>
+                <br />
+                <table>
+                    <thead>
+                        <tr>
+                            <th>name</th>
+                            <th>mfa</th>
+                            <th>protected</th>
+                            <th>restricted</th>
+                            <th>enforcement</th>
+                            <th>signed</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td>autograph</td>
+                        <td>True</td>
+                        <td>True</td>
+                        <td>True</td>
+                        <td>True</td>
+                        <td>True</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>Test All The Things</h2>
+                <p>Four main types of security tests:
                     <ol>
                         <li>Web application vulnerability scanning</li>
                         <li>Fuzzing</li>
                         <li>Static Code Analysis</li>
                         <li>Relying on external researchers</li>
                     </ol>
-                </section>
+            </section>
 
-                <section>
-                    <h2>Web application vulnerability scanning</h2>
-                    <p>Automated tools that spider your website and apply series of tests to each resource discovered.</p>
-                    <img src="statics/12.4 ZAP Scan annotated.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
 
-                <section>
-                    <h2>Web application vulnerability scanning</h2>
-                    <p>Spidering/Discovering all resources can be hard (particularly on modern webapps), so another option is to proxy browser traffic through the scanner.</p>
-                    <img src="statics/12.5 ZAP Proxy.png" />
-                </section>
+                <h2>Web application vulnerability scanning</h2>
+                <p>Automated tools that spider your website and apply series of tests to each resource discovered.</p>
+                <img src="statics/12.4 ZAP Scan annotated.png" />
+            </section>
 
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
 
-                <section>
-                    <h2>Fuzzing</h2>
-                    <p>Inject junk into the interfaces of an app to make it crash.</p>
-                    <img src="statics/12.6 ZAP Fuzzing annotated.png" />
-                </section>
+                <h2>Scanning is boring,<br />use a HUD!</h2>
+                <iframe width="1024" height="768" src="https://www.youtube.com/embed/cfrL1lKoXHI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+            </section>
 
-                <section>
-                    <h2>Static Code Analysis</h2>
-                    <p>Analyse the source code for security issues.</p>
-                    <pre><code data-trim data-noescape>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+
+                <h2>Fuzzing</h2>
+                <p>Inject junk into the interfaces of an app to make it crash.</p>
+                <img src="statics/12.6 ZAP Fuzzing annotated.png" />
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+
+                <h2>Static Code Analysis</h2>
+                <pre><code data-trim data-noescape>
 $ bandit -r src/github.com/Kinto/kinto
 
 Severity: High   Confidence: High
@@ -330,36 +491,39 @@ On Python 2, use raw_input instead, input is safe in Python 3.
 35  print('Username should match {0!r}, please try again.'.format(validator.regexp))
 36  username = input('Username: ')
                     </code></pre>
-                    <p>Static code analysers exist for many languages: bandit for python, eslint for javascript, gas for golang, etc.</p>
-                </section>
+            </section>
 
-                <section>
-                    <h2>Test your webappsec baseline from continuous integration</h2>
-                    <img src="statics/zap_ci.png" style="border:0;"/>
-                    <p>Don't deploy to prod unless the security tests pass in dev.</p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
 
-                <section>
-                    <h2>ZAP example in CircleCI</h2>
-                    <pre><code data-trim data-noescape>
+                <h2>Test your webappsec baseline from continuous integration</h2>
+                <img src="statics/zap_ci.png" style="border:0;" />
+                <p>Don't deploy to prod unless the security tests pass in dev.</p>
+            </section>
+
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+
+                <h2>ZAP Baseline in CI</h2>
+                <pre><code data-trim data-noescape>
 test:
-  override:
-    - docker run mozilla/cutefox
+    - run myapp
         background: true
 
     # pull down the ZAP docker container
     - docker pull owasp/zap2docker-weekly
 
     # Run ZAP against the application
-    - >
-        docker run -t owasp/zap2docker-weekly zap-baseline.py 
-        -t http://172.17.0.2:8080/
+    - docker run -t owasp/zap2docker-weekly zap-baseline.py \
+        -t http://myapp:8080/
                     </code></pre>
-                </section>
+            </section>
 
-                <section>
-                    <h2>Pass/Fail output, like unit tests</h2>
-                    <pre><code data-trim data-noescape>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+
+                <h2>Pass/Fail output, like unit tests</h2>
+                <pre><code data-trim data-noescape>
 PASS: Absence of Anti-CSRF Tokens [40014]
 
 WARN: Web Browser XSS Protection Not Enabled [10016] x 3
@@ -367,83 +531,130 @@ WARN: Web Browser XSS Protection Not Enabled [10016] x 3
     http://172.17.0.2:8080//robots.txt
     http://172.17.0.2:8080//sitemap.xml
                     </code></pre>
-                </section>
+            </section>
 
-                <section>
-                    <h2>Relying on external researchers</h2>
-                    <p>At a minimum, have a bug bounty program!</p>
-                    <img src="statics/12.12 Bug Bounty Payouts.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+                <h2>Measure your security posture</h2>
+                <img src="statics/ZAPBaselinebyday.png" />
+            </section>
 
-                <section>
-                    <h2>Relying on external researchers</h2>
-                    <p>As soon as you have the budget, hire specialists to audit your website. Ideally, make that report public too.</p>
-                    <img src="statics/fxa_audit.png" />
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+                <h2>Bug bounties</h2>
+                <img src="statics/12.12 Bug Bounty Payouts.png" />
+            </section>
 
-                <section>
-                    <h2>How about securing your servers?</h2>
-                    <h3>Must you really?</h3>
-                    <p>Unless you're a big shop, it's much safer to outsource:<br />Heroku, AWS ElasticBeanstalk, Google Cloud, etc.</p>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#7. Test All The Things</h4>
+                <h2>External Audits</h2>
+                <p>As soon as you have the budget, hire specialists to audit your website. Ideally, make that report
+                    public too.</p>
+                <img src="statics/fxa_audit.png" />
+            </section>
 
-                <section>
-                    <h2>To learn more about web application security</h2>
-                    <ol>
-                        <li>Mozilla's Web Security Guidelines: <a href="https://wiki.mozilla.org/Security/Guidelines/Web_Security">wiki.mozilla.org/Security/Guidelines/Web_Security</a></li>
-                        <li>Firefox's Operations Security Checklist: <a href="https://wiki.mozilla.org/Security/FirefoxOperations#Security_Checklist">wiki.mozilla.org/Security/FirefoxOperations</a></li>
-                    </ol>
-                </section>
+            <section>
+                <h4 style="position: fixed; top: 0; right: 0; color:grey;">Some extras...</h4>
+                <h2>How about securing your servers?</h2>
+                <h3>Must you really?</h3>
+                <p>Unless you're a big shop, it's much safer to outsource:<br />Heroku, AWS ElasticBeanstalk, Google
+                    Cloud, etc.</p>
+            </section>
 
-                <section>
-                    <h1>Stay out of the news, secure your websites.</h1>
-                </section>
+            <section>
+                <h2>To learn more about web application security</h2>
+                <ol>
+                    <li>Mozilla's Web Security Guidelines: <a href="https://wiki.mozilla.org/Security/Guidelines/Web_Security">wiki.mozilla.org/Security/Guidelines/Web_Security</a></li>
+                    <li>Firefox's Operations Security Checklist: <a href="https://wiki.mozilla.org/Security/FirefoxOperations#Security_Checklist">wiki.mozilla.org/Security/FirefoxOperations</a></li>
+                </ol>
+            </section>
 
-                <section>
-                    <h1>Thank you</h1>
-                    <img src="statics/firefox_2017_logo.jpg" width=400/>
-                </section>
-			</div>
-		</div>
+            <section>
+                <h1>Stay out of the news.</h1>
+                <h1>Secure your websites!</h1>
+            </section>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+            <section>
+                <h2>Thank you</h2>
+                <table>
+                    <tr>
+                        <td><img src="statics/Vehent-SDO-MEAP-HI.png" /></td>
+                        <td style="vertical-align:middle">
+                            <h2><a href="https://securing-devops.com">securing-devops.com</a></h2>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+        </div>
+    </div>
 
-		<script>
-			// More info https://github.com/hakimel/reveal.js#configuration
-			Reveal.initialize({
-				history: true,
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
 
-				// More info https://github.com/hakimel/reveal.js#dependencies
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-            Reveal.configure({
-                slideNumber: true,
-                slideNumber: 'c/t',
+    <script>
+        // More info https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            history: true,
+            width: 1960,
+            height: 1080,
+            // // Factor of the display size that should remain empty around the content
+            // margin: 0.1,
 
-            });
-		</script>
-		<!-- Piwik -->
-		<script type="text/javascript">
-		  var _paq = _paq || [];
-		  _paq.push(["setDomains", ["*.securing-devops.com","*.jvehent.github.io/continuous-security-talk"]]);
-		  _paq.push(['trackPageView']);
-		  _paq.push(['enableLinkTracking']);
-		  (function() {
-			var u="//linuxwall.info/webstats/";
-			_paq.push(['setTrackerUrl', u+'piwik.php']);
-			_paq.push(['setSiteId', 5]);
-			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-			g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-		  })();
-		</script>
-		<noscript><p><img src="//linuxwall.info/webstats/piwik.php?idsite=5" style="border:0;" alt="" /></p></noscript>
-		<!-- End Piwik Code -->
+            // // Bounds for smallest/largest possible scale to apply to content
+            // minScale: 0.2,
+            // maxScale: 1.5,
 
-	</body>
+            // More info https://github.com/hakimel/reveal.js#dependencies
+            dependencies: [{
+                    src: 'plugin/markdown/marked.js'
+                },
+                {
+                    src: 'plugin/markdown/markdown.js'
+                },
+                {
+                    src: 'plugin/notes/notes.js',
+                    async: true
+                },
+                {
+                    src: 'plugin/highlight/highlight.js',
+                    async: true,
+                    callback: function () {
+                        hljs.initHighlightingOnLoad();
+                    }
+                }
+            ]
+        });
+        Reveal.configure({
+            slideNumber: true,
+            slideNumber: 'c/t',
+
+        });
+    </script>
+    <!-- Piwik -->
+    <script type="text/javascript">
+        var _paq = _paq || [];
+        _paq.push(["setDomains", ["*.securing-devops.com", "*.jvehent.github.io/continuous-security-talk"]]);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function () {
+            var u = "//linuxwall.info/webstats/";
+            _paq.push(['setTrackerUrl', u + 'piwik.php']);
+            _paq.push(['setSiteId', 5]);
+            var d = document,
+                g = d.createElement('script'),
+                s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.async = true;
+            g.defer = true;
+            g.src = u + 'piwik.js';
+            s.parentNode.insertBefore(g, s);
+        })();
+    </script>
+    <noscript>
+        <p><img src="//linuxwall.info/webstats/piwik.php?idsite=5" style="border:0;" alt="" /></p>
+    </noscript>
+    <!-- End Piwik Code -->
+
+</body>
+
 </html>

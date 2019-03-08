@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Modern Web Application Security, by Julien Vehent</title>
+
+		<meta name="author" content="Julien Vehent">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/beige.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+        <div id="logo">
+            <img src="statics/mozilla.png" width="15%" class="logo"/>
+        </div>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+                    <h1>Modern Web Application Security</h1>
+                    <h2>A hands-on guide to staying out of<br />(the wrong kind of) news</h2>
+                    <br /><br />
+                    <p>Slides at<br /><strong>jvehent.github.io/modern-webappsec/</strong></p>
+                    <!-- <p style="font-size:0.5em;">tip: navigate with left/right arrows</p> -->
+                </section>
+
+                <section data-background-image="statics/firefox-gray.png">
+                    <h2>$whoami</h2>
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="statics/id2015.JPG" width="500" />
+                            </td>
+                            <td style="vertical-align:middle">
+                                <ul>
+                                    <li>Run Operations Security for Firefox</li>
+                                    <li>DevSecOps tools coder</li>
+                                    <li><strong>@jvehent</strong> on twitter</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <img src="statics/Vehent-SDO-MEAP-HI.png" />
+                </section>
+
+                <section>
+                    <h2>Let's take a random target...</h2>
+                    <img src="statics/4chan.png" />
+                </section>
+
+                <section>
+                    <h2>Like most website, it has a few issues</h2>
+                    <img src="statics/observatory.png" />
+                </section>
+
+                <section>
+                    <h2>And it's not the only one.</h2>
+                    <img src="statics/united.png" />
+                </section>
+
+                <section>
+                    <h2>Some try a bit harder...</h2>
+                    <img src="statics/nytimes.png" />
+                </section>
+
+                <section>
+                    <h2>... but overall, we suck at webappsec</h2>
+                    <a href="https://pokeinthe.io/2018/02/08/state-of-security-alexa-top-one-million-2018-02/"><img src="statics/observatory_stats.png" /></a>
+                </section>
+
+                <section>
+                    <h2>Bug bounty researchers continuously show that poor webappsec is a risk</h2>
+                    <img src="statics/bugcrowd.png" />
+                </section>
+
+                <section>
+                    <h2>Modern web applications are ridiculously complex</h2>
+                    <img src="statics/react_joke.png" width="70%"/>
+                </section>
+
+                <section>
+                    <h2>But securing them is possible!</h2>
+                    <p>with some amount of effort</p>
+                    <img src="statics/fxa.png" />
+                </section>
+
+                <section>
+                    <h2>Web Application Security</h2>
+                    <h3>in six steps</h3>
+                    <ol>
+                        <li>Content Injection</li>
+                        <li>Accepting User Generated Content</li>
+                        <li>Cookie Security</li>
+                        <li>Authenticating users</li>
+                        <li>HTTPS</li>
+                        <li>Testing Security</li>
+                    </ol>
+                </section>
+               
+                <section>
+                    <h2>Content Injection</h2>
+                    <p>Hacker's favorite way to blowing up your webapps since....<br />pretty much forever.</p>
+                    <img src="statics/samy.jpg" />
+                </section>
+
+                <section>
+                    <h2>Cross-Site Scripting</h2>
+                    <p><em>Cross-site scripting (XSS) is a security exploit which allows an attacker to inject into a website malicious client-side code. This code is executed by the victims and lets the attackers bypass access controls and impersonate users.</em></p>
+                </section>
+
+                <section>
+                    <h2>Cross-Site Scripting</h2>
+                    <pre><code data-trim data-noescape>
+&lt;script type='text/javascript'&gt;alert('xss');&lt;/script&gt;
+                    </code></pre>
+                    <img src="statics/xss.png" />
+                </section>
+
+                <section>
+                    <h2>Cross-Site Scripting</h2>
+                    <img src="statics/xss_at_mozilla.png" />
+                </section>
+
+                <section>
+                    <h2>Content Security Policy</h2>
+                    <h3>the XSS remedy</h3>
+                    <pre><code data-trim data-noescape>
+Content-Security-Policy: default-src *; object-src 'none'
+                    </code></pre>
+                    <p>Disable the use of unsafe inline/eval,<br />allow everything else except plugin execution.</p>
+                </section>
+
+                <section>
+                    <h2>CSP in your application</h2>
+                    <pre><code data-trim data-noescape>
+func setResponseHeaders() Middleware {
+  return func(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    
+      w.Header().Add("Content-Security-Policy",
+                     "default-src *; object-src 'none'")
+
+      w.Header().Add("X-XSS-Protection",
+                     "1; mode=block")
+
+      h.ServeHTTP(w, r)
+    })
+  }
+}
+                    </code></pre>
+                    <p>You need to return the CSP header on <strong>every</strong> HTTP response.</p>
+                </section>
+
+                <section>
+                    <h2>Accepting user generated content</h2>
+                    <img src="statics/yelpcritic.gif" />
+                </section>
+
+                <section>
+                    <h2>Accepting user generated content</h2>
+                    <p>This is easy: <strong>DON'T REFLECT IT ON YOUR MAIN ORIGIN!</strong></p>
+                    <p>Put user generated data on a separate domain that doesn't have cookies, and insert it on your main site with an iFrame.</p>
+                    <p>This prevents UGC from having access to the origin.</p>
+                </section>
+
+                <section>
+                    <h2>Accepting user generated content</h2>
+                    <img src="statics/iframe-ugc.svg" />
+                    <p>This is (partly) why Facebook puts user images on "fbcdn.net"</p>
+                </section>
+
+                <section>
+                    <h2>Cookie Security</h2>
+                    <p>Cookies are well protected in the browser, if you use them the right way. The rule of thumb:
+                    <ol>
+                        <li>Don't let Javascript read them, set the HTTPOnly flag</li>
+                        <li>Don't send them in clear, set the Secure flag</li>
+                        <li>Use sensible expiration via Expires or Max-Age</li>
+                        <li>Don't send them around, set SameSite=Strict</li>
+                    </ol></p>
+                </section>
+
+                <section>
+                    <h2>Cookie Security</h2>
+                    <h3>Wait... what was that last one?</h3>
+                    <p>SameSite is a new cookie attribute that tells the browser to only send the cookie back to the origin is was set from.</p>
+                </section>
+
+                <section>
+                    <h2>Cookie Security</h2>
+                    <p>SameSite prevents third-party sites from forcing you to send requests with your cookies. It's like a CSRF token, only nicer.</p>
+                    <img src="statics/csrf.png" />
+                </section>
+
+                <section>
+                    <h2>Authenticating Users</h2>
+                    <p>Don't store user passwords, don't end up on this list.</p>
+                    <img src="statics/haveibeenpwned.png" />
+                </section>
+
+                <section>
+                    <h2>Authenticating Users</h2>
+                    <p>Let someone else do identity management for you.</p>
+                    <img src="statics/oidc_providers.png" />
+                </section>
+
+                <section>
+                    <h2>Authenticating Users</h2>
+                    <p>Benefits of delegating identity management:
+                    <ul>
+                        <li>No more passwords in your database</li>
+                        <li>Most providers support two-factor authentication already</li>
+                        <li>Most providers will do fraud detection</li>
+                        <li>Users don't have to remember 3,719 passwords</li>
+                    </ul>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Dependencies</h2>
+                    <p>Breaking news: you're probably pulling half the internet in your webapp at every build.</p>
+                    <img src="statics/vladnpm.png" />
+                </section>
+
+                <section>
+                    <h2>Dependencies</h2>
+                    <p>At least make sure it's up to date.</p>
+                    <img src="statics/requirements.io.png" />
+                </section>
+
+                <section>
+                    <h2>Dependencies testing tools</h2>
+                    <ol>
+                        <li>Nodejs: greenkeeper.io</li>
+                        <li>Python: pyup.io</li>
+                        <li>Snyk.io covers npm, pip, maven and rubygem</li>
+                    </ol>
+                </section>
+                
+                <section>
+                    <h2>HTTPS</h2>
+                    <p>A pre-requisite to any website nowadays.</p>
+                    <img src="statics/insecure_password.png" />
+                </section>
+
+                <section>
+                    <h2>Use Let's Encrypt!</h2>
+                    <img src="statics/le-logo-twitter.png" />
+                </section>
+
+                <section>
+                    <h2>Automated certificate issuance</h2>
+                    <img src="statics/howitworks_challenge.png" />
+                    <img src="statics/howitworks_authorization.png"/>
+                </section>
+
+                <section>
+                    <h2>Test your HTTPS</h2>
+                    <p>Many web servers and providers now have good defaults configurations. Trust, but verify!"
+                    <img src="statics/tlsobs.png" />
+                </section>
+
+                <section>
+                    <h2>Use hardened server configs</h2>
+                    <p>Don't make up your own, it's too time consuming</p>
+                    <img src="statics/tls-config-gen.png" />
+                </section>
+
+                <section>
+                    <h2>Testing Security</h2>
+                    <p>Four main types of security tests:
+                    <ol>
+                        <li>Web application vulnerability scanning</li>
+                        <li>Fuzzing</li>
+                        <li>Static Code Analysis</li>
+                        <li>Relying on external researchers</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>Web application vulnerability scanning</h2>
+                    <p>Automated tools that spider your website and apply series of tests to each resource discovered.</p>
+                    <img src="statics/12.4 ZAP Scan annotated.png" />
+                </section>
+
+                <section>
+                    <h2>Web application vulnerability scanning</h2>
+                    <p>Spidering/Discovering all resources can be hard (particularly on modern webapps), so another option is to proxy browser traffic through the scanner.</p>
+                    <img src="statics/12.5 ZAP Proxy.png" />
+                </section>
+
+
+                <section>
+                    <h2>Fuzzing</h2>
+                    <p>Inject junk into the interfaces of an app to make it crash.</p>
+                    <img src="statics/12.6 ZAP Fuzzing annotated.png" />
+                </section>
+
+                <section>
+                    <h2>Static Code Analysis</h2>
+                    <p>Analyse the source code for security issues.</p>
+                    <pre><code data-trim data-noescape>
+$ bandit -r src/github.com/Kinto/kinto
+
+Severity: High   Confidence: High
+Location: src/github.com/Kinto/kinto/kinto/plugins/accounts/scripts.py:36
+
+>> Issue: [B322:blacklist] The input method in Python 2 will read from
+standard input, evaluate and run the resulting string as python source
+code. This is similar, though in many ways worse, then using eval.
+On Python 2, use raw_input instead, input is safe in Python 3.
+
+35  print('Username should match {0!r}, please try again.'.format(validator.regexp))
+36  username = input('Username: ')
+                    </code></pre>
+                    <p>Static code analysers exist for many languages: bandit for python, eslint for javascript, gas for golang, etc.</p>
+                </section>
+
+                <section>
+                    <h2>Test your webappsec baseline from continuous integration</h2>
+                    <img src="statics/zap_ci.png" style="border:0;"/>
+                    <p>Don't deploy to prod unless the security tests pass in dev.</p>
+                </section>
+
+                <section>
+                    <h2>ZAP example in CircleCI</h2>
+                    <pre><code data-trim data-noescape>
+test:
+  override:
+    - docker run mozilla/cutefox
+        background: true
+
+    # pull down the ZAP docker container
+    - docker pull owasp/zap2docker-weekly
+
+    # Run ZAP against the application
+    - >
+        docker run -t owasp/zap2docker-weekly zap-baseline.py 
+        -t http://172.17.0.2:8080/
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Pass/Fail output, like unit tests</h2>
+                    <pre><code data-trim data-noescape>
+PASS: Absence of Anti-CSRF Tokens [40014]
+
+WARN: Web Browser XSS Protection Not Enabled [10016] x 3
+    http://172.17.0.2:8080/
+    http://172.17.0.2:8080//robots.txt
+    http://172.17.0.2:8080//sitemap.xml
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Relying on external researchers</h2>
+                    <p>At a minimum, have a bug bounty program!</p>
+                    <img src="statics/12.12 Bug Bounty Payouts.png" />
+                </section>
+
+                <section>
+                    <h2>Relying on external researchers</h2>
+                    <p>As soon as you have the budget, hire specialists to audit your website. Ideally, make that report public too.</p>
+                    <img src="statics/fxa_audit.png" />
+                </section>
+
+                <section>
+                    <h2>How about securing your servers?</h2>
+                    <h3>Must you really?</h3>
+                    <p>Unless you're a big shop, it's much safer to outsource:<br />Heroku, AWS ElasticBeanstalk, Google Cloud, etc.</p>
+                </section>
+
+                <section>
+                    <h2>To learn more about web application security</h2>
+                    <ol>
+                        <li>Mozilla's Web Security Guidelines: <a href="https://wiki.mozilla.org/Security/Guidelines/Web_Security">wiki.mozilla.org/Security/Guidelines/Web_Security</a></li>
+                        <li>Firefox's Operations Security Checklist: <a href="https://wiki.mozilla.org/Security/FirefoxOperations#Security_Checklist">wiki.mozilla.org/Security/FirefoxOperations</a></li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h1>Stay out of the news, secure your websites.</h1>
+                </section>
+
+                <section>
+                    <h1>Thank you</h1>
+                    <img src="statics/firefox_2017_logo.jpg" width=400/>
+                </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+            Reveal.configure({
+                slideNumber: true,
+                slideNumber: 'c/t',
+
+            });
+		</script>
+		<!-- Piwik -->
+		<script type="text/javascript">
+		  var _paq = _paq || [];
+		  _paq.push(["setDomains", ["*.securing-devops.com","*.jvehent.github.io/continuous-security-talk"]]);
+		  _paq.push(['trackPageView']);
+		  _paq.push(['enableLinkTracking']);
+		  (function() {
+			var u="//linuxwall.info/webstats/";
+			_paq.push(['setTrackerUrl', u+'piwik.php']);
+			_paq.push(['setSiteId', 5]);
+			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+			g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+		  })();
+		</script>
+		<noscript><p><img src="//linuxwall.info/webstats/piwik.php?idsite=5" style="border:0;" alt="" /></p></noscript>
+		<!-- End Piwik Code -->
+
+	</body>
+</html>
