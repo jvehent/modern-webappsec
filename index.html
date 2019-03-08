@@ -209,6 +209,16 @@
             </section>
 
             <section>
+                    <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
+    
+                    <h2>Cross-Site Scripting</h2>
+                    <pre><code data-trim data-noescape>
+    &lt;script type='text/javascript'&gt;alert('xss');&lt;/script&gt;
+                        </code></pre>
+                    <img src="statics/xss.png" />
+                </section>
+
+            <section>
                 <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
 
                 <h2>Remember Samy?</h2>
@@ -230,16 +240,6 @@ var J;var AS=getQueryParams();var L=AS['Mytoken'];var M=AS['friendID'];
 if(location.hostname=='profile.myspace.com'){document.location='http://www.myspace.com'+
 location.pathname+location.search}else{if(!M){getData(g())}main()}function getClientFID(){
                 </code></pre>
-            </section>
-
-            <section>
-                <h4 style="position: fixed; top: 0; right: 0; color:grey;">#2. Block Injections</h4>
-
-                <h2>Cross-Site Scripting</h2>
-                <pre><code data-trim data-noescape>
-&lt;script type='text/javascript'&gt;alert('xss');&lt;/script&gt;
-                    </code></pre>
-                <img src="statics/xss.png" />
             </section>
 
             <section>
